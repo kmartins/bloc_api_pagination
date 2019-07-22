@@ -11,7 +11,6 @@ class PaginationBloc {
 
   PaginationBloc({this.onScroll}) {
     transformed = stream
-        .doOnData((e) => onScroll())
         .startWith(1)
         .mapTo<int>(1)
         .scan<int>((b, c, i) => b + c, 0)
@@ -20,6 +19,10 @@ class PaginationBloc {
         .map((e) => e.items)
         .scan<List>((a, b, i) => a..addAll(b), [])
         .asBroadcastStream();
+
+    transformed
+    .skip(1)
+    .listen((e) => onScroll());
   }
 
   void dispose() {
