@@ -47,6 +47,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   PaginationBloc _paginationBloc;
   ScrollController _controller;
+  
   @override
   void initState() {
     _paginationBloc = new PaginationBloc(
@@ -74,6 +75,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               actions: <Widget>[],
             ));
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(pagesListener);
+    _controller.dispose();
+    _paginationBloc.dispose();
+    super.dispose();
   }
 
   @override
