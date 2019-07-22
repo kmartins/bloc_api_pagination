@@ -49,15 +49,31 @@ class _MyHomePageState extends State<MyHomePage> {
   ScrollController _controller;
   @override
   void initState() {
-    _paginationBloc = new PaginationBloc();
+    _paginationBloc = new PaginationBloc(
+      onScroll: showPopUp,
+    );
     _controller = new ScrollController();
-    _controller.addListener(() {
-      if (_controller.position.pixels <=
-          _controller.position.maxScrollExtent - 40) {
-        _paginationBloc.event.add(null);
-      }
-    });
+    _controller.addListener(pagesListener);
     super.initState();
+  }
+
+  void pagesListener() {
+    if (_controller.position.pixels >=
+        _controller.position.maxScrollExtent - 3) {
+      _paginationBloc.event.add(null);
+    }
+  }
+
+  void showPopUp() {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text("Hello"),
+              content: Container(
+                child: Text("Scroll new page"),
+              ),
+              actions: <Widget>[],
+            ));
   }
 
   @override
@@ -70,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialData: [],
         stream: _paginationBloc.transformed,
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+          print("snapshot dnv");
           print(snapshot.data);
           return ListView.builder(
             controller: _controller,

@@ -1,6 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 
 class PaginationBloc {
+  Function() onScroll;
   Observable<List> transformed;
   final Api api = new Api();
   final _replay = new BehaviorSubject();
@@ -8,15 +9,17 @@ class PaginationBloc {
   Observable get stream => _replay.stream;
   Sink get event => _replay.sink;
 
-  PaginationBloc() {
+  PaginationBloc({this.onScroll}) {
     transformed = stream
+        .doOnData((e) => onScroll())
         .startWith(1)
         .mapTo<int>(1)
         .scan<int>((b, c, i) => b + c, 0)
         .asyncMap((a) => api.getFavorites(a))
-        .takeWhile((e) => e.items.isNotEmpty)
+        .takeWhile((e) => e.items.isNotEmpty == true)
         .map((e) => e.items)
-        .scan<List>((a, b, i) => a..addAll(b), []).asBroadcastStream();
+        .scan<List>((a, b, i) => a..addAll(b), [])
+        .asBroadcastStream();
   }
 
   void dispose() {
@@ -34,12 +37,12 @@ class Api {
       []
     ];
     List<ApiResult> items = list.map((e) {
-      print(list.indexOf(e));
       return ApiResult(
         currentPage: list.indexOf(e),
         items: e,
       );
     }).toList();
+    print("MINHA PAGE : ${items[page - 1].items.isEmpty} e ${page - 1}");
     return Future.delayed(Duration(seconds: 1), () => items[page - 1]);
   }
 }
@@ -48,5 +51,5 @@ class ApiResult {
   List items;
   int currentPage;
 
-  ApiResult({this.items, this.currentPage}) {}
+  ApiResult({this.items, this.currentPage});
 }
