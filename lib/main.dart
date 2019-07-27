@@ -72,20 +72,31 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: StreamBuilder(
-        initialData: [],
+        initialData: <Data>[],
         stream: _paginationBloc.transformed,
-        builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<Data>> snapshot) {
           print("snapshot dnv");
           print(snapshot.data);
           return ListView.builder(
             controller: _controller,
             itemCount: snapshot?.data?.length ?? 0,
             itemBuilder: (ctx, i) {
+              final data = snapshot.data[i];
               return Container(
+                padding: const EdgeInsets.only(
+                    top: 20, bottom: 20, left: 10, right: 10),
                 margin: const EdgeInsets.all(10),
-                color: Colors.red,
-                width: 200,
+                color: Colors.blueGrey,
+                width: double.infinity,
                 height: 200,
+                child: Column(
+                  children: <Widget>[
+                    Text("${data.id}"),
+                    Text("${data.firstName}"),
+                    Text("${data.lastName}"),
+                    Text("${data.email}"),
+                  ],
+                ),
               );
             },
           );
